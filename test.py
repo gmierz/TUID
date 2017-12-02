@@ -19,7 +19,7 @@ if __name__ == '__main__':
     files=list(map(lambda x : "/dom/base/"+x,files))
     start = calendar.timegm(time.gmtime())
     p = Pool(5)
-    print(len(list(map(f, files))))
+    print(len(list(p.map(f, files)))) #remove p to test sequentially
     end = calendar.timegm(time.gmtime())
     print(end-start)
     print("end")
