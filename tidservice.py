@@ -103,10 +103,9 @@ class TIDService:
         else:
             url = 'https://hg.mozilla.org/' + self.config['hg']['branch'] + '/json-file/' + revision + file
             Log.note(url)
-            response = Web.get_string(url)
-            if response.status_code == 404:
-                return ()
-            mozobj = json.loads(response.text)
+            mozobj = Web.get(url)
+            if not mozobj:
+                return []
             date = mozobj['date'][0]
             cid = mozobj['node'][:12]
             file = "/" + mozobj['path']
@@ -173,6 +172,8 @@ class TIDService:
         url = 'https://hg.mozilla.org/' + self.config['hg']['branch'] + '/json-annotate/' + revision + file
         Log.note(url)
         mozobj = Web.get(url)
+        if mozobj is None:
+           return []
         date = mozobj['date'][0]
         child = mozobj['children']
         if child:

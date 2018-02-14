@@ -14,8 +14,10 @@ class Web:
     @staticmethod
     def get(url):
         response = requests.get(url)
-        return json.loads(response.text)
+        if response.status_code == 404:
+            return None
+        try:
+            return json.loads(response.text)
+        except Exception as e:
+            return None
 
-    @staticmethod
-    def get_string(url):
-        return requests.get(url)
