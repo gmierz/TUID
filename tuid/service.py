@@ -17,11 +17,11 @@ import sql
 import sqlite3
 from web import Web
 
-GET_TID_QUERY = "SELECT * from Temporal WHERE file=? and substr(revision,0,13)=substr(?,0,13);"
+GET_TUID_QUERY = "SELECT * from Temporal WHERE file=? and substr(revision,0,13)=substr(?,0,13);"
 GET_CHANGESET_QUERY = "select * from changeset where file=? and substr(cid,0,13)=substr(?,0,13)"
 
 
-class TIDService:
+class TUIDService:
     def __init__(self, conn=None):  # pass in conn for testing purposes
         try:
             with open('config.json', 'r') as f:
@@ -39,14 +39,14 @@ class TIDService:
         # Operator is 1 to add a line, negative to delete specified lines
         self.conn.execute('''
         CREATE TABLE Temporal (
-            TID INTEGER PRIMARY KEY     AUTOINCREMENT,
+            TUID INTEGER PRIMARY KEY     AUTOINCREMENT,
             REVISION CHAR(12)		  NOT NULL,
             FILE TEXT,
             LINE INT,
             OPERATOR INTEGER,
             UNIQUE(REVISION,FILE,LINE,OPERATOR)
         );''')
-        # Changeset and Revision are for telling which TIDs are from a Revision and which are from a Changeset
+        # Changeset and Revision are for telling which TUIDs are from a Revision and which are from a Changeset
         # Also for date information and stuff
         self.conn.execute('''
         CREATE TABLE Changeset (
@@ -63,7 +63,7 @@ class TIDService:
             FILE TEXT,
             DATE INTEGER,
             CHILD CHAR(12),
-            TID INTEGER,
+            TUID INTEGER,
             LINE INTEGER,
             PRIMARY KEY(REV,FILE,LINE)
         );''')
@@ -78,15 +78,15 @@ class TIDService:
 
         Log.note("Table created successfully")
 
-    def get_tids_from_files(self, dir, files, revision):
+    def get_tuids_from_files(self, dir, files, revision):
         result = []
         total = len(files)
         for count, file in enumerate(files):
             Log.note("{{file}} {{percent|percent(decimal=0)}}", file=file, percent=count / total)
-            result.append((file, self.get_tids(dir + file, revision)))
+            result.append((file, self.get_tuids(dir + file, revision)))
         return result
 
-    def get_tids(self, file, revision):
+    def get_tuids(self, file, revision):
         # Grabs date
         date_list = self.conn.get_one(
             (
@@ -133,14 +133,14 @@ class TIDService:
                 url = 'https://hg.mozilla.org/' + self.config['hg']['branch'] + '/json-diff/' + current_changeset + file
                 Log.note(url)
                 mozobj = Web.get(url)
-                self._make_tids_from_diff(mozobj)
-                cs_list = self.conn.get(GET_TID_QUERY, (file, current_changeset))
+                self._make_tuids_from_diff(mozobj)
+                cs_list = self.conn.get(GET_TUID_QUERY, (file, current_changeset))
                 current_changeset = mozobj['children']
                 if current_changeset:
                     current_changeset = current_changeset[0][:12]
                 current_date = mozobj['date'][0]
             else:
-                cs_list = self.conn.get(GET_TID_QUERY, (file, current_changeset))
+                cs_list = self.conn.get(GET_TUID_QUERY, (file, current_changeset))
                 current_changeset = change_set[0][4]
                 current_date = change_set[0][3]
             if current_date > date:
@@ -160,9 +160,9 @@ class TIDService:
     def _get_revision(self, file, revision):
         res = self.conn.get(
             (
-                "select t.tid,t.revision,t.file,t.line,t.operator" +
+                "select t.tuid,t.revision,t.file,t.line,t.operator" +
                 " from temporal t, revision r" +
-                " where t.tid=r.tid and r.file=? and r.rev=?" +
+                " where t.tuid=r.tuid and r.file=? and r.rev=?" +
                 "order by r.line;"
             ),
             (file, revision[:12],)
@@ -187,19 +187,19 @@ class TIDService:
                                   (el['node'][:12], file, el['targetline'], '1',))
             except sqlite3.IntegrityError:
                 pass
-            tid_result = self.conn.get_one("select TID from Temporal where REVISION=? AND FILE=? AND LINE=?", (el['node'][:12], file, el['targetline'],))[0]
+            tuid_result = self.conn.get_one("select TUID from Temporal where REVISION=? AND FILE=? AND LINE=?", (el['node'][:12], file, el['targetline'],))[0]
             try:
-                self.conn.execute("INSERT into REVISION (REV,FILE,DATE,CHILD,TID,LINE) values (substr(?,0,13),?,?,?,?,?);",
-                                  (revision, file, date, child, tid_result, count,))
+                self.conn.execute("INSERT into REVISION (REV,FILE,DATE,CHILD,TUID,LINE) values (substr(?,0,13),?,?,?,?,?);",
+                                  (revision, file, date, child, tuid_result, count,))
             except sqlite3.IntegrityError:
                 pass
             count += 1
 
         self.conn.commit()
-        return self.conn.get("select t.tid,t.revision,t.file,t.line,t.operator from temporal t, revision r where "
-                             "t.tid=r.tid and r.file=? and r.rev=? order by r.line;", (file, revision[:12],))
+        return self.conn.get("select t.tuid,t.revision,t.file,t.line,t.operator from temporal t, revision r where "
+                             "t.tuid=r.tuid and r.file=? and r.rev=? order by r.line;", (file, revision[:12],))
 
-    def _make_tids_from_diff(self, diff):  # Single use
+    def _make_tuids_from_diff(self, diff):  # Single use
         mozobj = diff
         if not mozobj['diff']:
             return None
