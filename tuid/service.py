@@ -10,26 +10,26 @@ from __future__ import unicode_literals
 
 import json
 import re
+import sqlite3
 
+from mo_kwargs import override
 from mo_logs import Log
 
-import sql
-import sqlite3
-from web import Web
+from tuid import sql
+from tuid.web import Web
 
 GET_TUID_QUERY = "SELECT * from Temporal WHERE file=? and substr(revision,0,13)=substr(?,0,13);"
 GET_CHANGESET_QUERY = "select * from changeset where file=? and substr(cid,0,13)=substr(?,0,13)"
 
 
 class TUIDService:
-    def __init__(self, conn=None):  # pass in conn for testing purposes
+
+    @override
+    def __init__(self, database, hg, conn=None, kwargs=None):  # pass in conn for testing purposes
         try:
-            with open('config.json', 'r') as f:
-                self.config = json.load(f, encoding='utf8')
-            if not conn:
-                self.conn = sql.Sql(self.config['database']['name'])
-            else:
-                self.conn = conn
+            self.config = kwargs
+            self.conn = conn if conn else sql.Sql(self.config.database.name)
+
             if not self.conn.get_one("SELECT name FROM sqlite_master WHERE type='table';"):
                 self.init_db()
         except Exception as e:

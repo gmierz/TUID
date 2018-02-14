@@ -1,8 +1,42 @@
 {
-  "database": {
-    "name":"TUID.db"
-  },
-  "hg" : {
-    "branch":"mozilla-central"
-  }
+    "tuid": {
+        "database": {
+            "name": "TUID.db"
+        },
+        "hg": {
+            "branch": "mozilla-central"
+        }
+    },
+    "hg_cache": {
+   		"use_cache": true,
+   		"hg": {
+   			"url": "https://hg.mozilla.org"
+   		},
+   		"branches": {
+   			"host": "http://activedata.allizom.org",
+   			"port": 9200,
+   			"index": "branches",
+   			"type": "branch",
+   			"timeout": 300,
+   			"consistency": "one", // WE ONLY NEED ONE SHARD TO BE AVAILABLE
+   			"debug": false,
+   			"limit_replicas": false
+   		},
+   		"repo": {
+   			"host": "http://activedata.allizom.org",
+   			"port": 9200,
+   			"index": "repo",
+   			"type": "revision",
+   			"timeout": 300,
+   			"consistency": "one", // WE ONLY NEED ONE SHARD TO BE AVAILABLE
+   			"debug": false,
+   			"limit_replicas": false
+   		}
+   	},
+	"constants":{
+		"pyLibrary.env.http.default_headers":{"Referer":"https://github.com/mozilla/TUID"}
+	},
+    "debug": {
+        "trace": true
+    }
 }

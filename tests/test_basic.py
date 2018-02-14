@@ -9,19 +9,22 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import pytest
+from mo_logs import Log
 
-import sql
+from tuid import sql
 from tuid.service import TUIDService
 
 config = None
 
 
 @pytest.fixture
-def service(new_db):
+def service(config, new_db):
     if new_db == 'yes':
-        return TUIDService(conn=sql.Sql(":memory:"))
+        return TUIDService(conn=sql.Sql(":memory:"), kwargs=config.tuid)
     elif new_db == 'no':
-        return TUIDService(conn=sql.Sql("resources/test.db"))
+        return TUIDService(conn=sql.Sql("resources/test.db"), kwargs=config.tuid)
+    else:
+        Log.error("expecting 'yes' or 'no'")
 
 
 def test_new_then_old(service):
