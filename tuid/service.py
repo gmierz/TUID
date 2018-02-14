@@ -173,7 +173,7 @@ class TUIDService:
         Log.note(url)
         mozobj = Web.get(url)
         if mozobj is None:
-           return []
+           return []  # TODO: ensure we cache this in database
         date = mozobj['date'][0]
         child = mozobj['children']
         if child:
