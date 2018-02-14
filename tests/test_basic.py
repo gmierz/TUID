@@ -62,7 +62,8 @@ def test_tids_on_changed_file(service):
 
 
 def test_remove_file(service):
-    assert 0 == len(service.get_tids("/third_party/speedometer/InteractiveRunner.html", "e3f24e165618"))
+    no_lines = service.get_tids("/third_party/speedometer/InteractiveRunner.html", "e3f24e165618")
+    assert 0 == len(no_lines)
 
 
 def test_generic_1(service):
