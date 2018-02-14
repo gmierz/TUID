@@ -75,6 +75,13 @@ def test_generic_1(service):
         assert old[i] == new[i]
 
 
+def test_500_file(service):
+    # this file has no history (nore should it have tuids)
+    # calling hg will return a 500 error
+    tuids = service.get_tids("/browser/tools/mozscreenshots/mozscreenshots/extension/lib/robot_upperleft.png", "d3ed36f4fb7a")
+    assert len(tuids) == 0
+
+
 def test_file_with_line_replacement(service):
     new = service.get_tids("/python/mozbuild/mozbuild/action/test_archive.py", "e3f24e165618")
     old = service.get_tids("/python/mozbuild/mozbuild/action/test_archive.py", "c730f942ce30")

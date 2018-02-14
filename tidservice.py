@@ -17,8 +17,8 @@ import sql
 import sqlite3
 from web import Web
 
-GRAB_TID_QUERY = "SELECT * from Temporal WHERE file=? and substr(revision,0,13)=substr(?,0,13);"
-GRAB_CHANGESET_QUERY = "select * from changeset where file=? and substr(cid,0,13)=substr(?,0,13)"
+GET_TID_QUERY = "SELECT * from Temporal WHERE file=? and substr(revision,0,13)=substr(?,0,13);"
+GET_CHANGESET_QUERY = "select * from changeset where file=? and substr(cid,0,13)=substr(?,0,13)"
 
 
 class TIDService:
@@ -88,13 +88,14 @@ class TIDService:
 
     def get_tids(self, file, revision):
         # Grabs date
-        date_list = self.conn.get_one((
-            "select date from (" +
-            "    select cid,file,date from changeset union " +
-            "    select rev,file,date from revision union " +
-            "    select cid,file,date from dates" +
-            ") where cid=? and file=?;"
-        ),
+        date_list = self.conn.get_one(
+            (
+                "select date from (" +
+                "    select cid,file,date from changeset union " +
+                "    select rev,file,date from revision union " +
+                "    select cid,file,date from dates" +
+                ") where cid=? and file=?;"
+            ),
             (revision, file,)
         )
         if date_list:
@@ -125,7 +126,7 @@ class TIDService:
         while True:
             if current_changeset == []:
                 return old_rev
-            change_set = self.conn.get(GRAB_CHANGESET_QUERY, (file, current_changeset,))
+            change_set = self.conn.get(GET_CHANGESET_QUERY, (file, current_changeset,))
             if not current_changeset:
                 return old_rev
             if not change_set:
@@ -134,13 +135,13 @@ class TIDService:
                 Log.note(url)
                 mozobj = Web.get(url)
                 self._make_tids_from_diff(mozobj)
-                cs_list = self.conn.get(GRAB_TID_QUERY, (file, current_changeset))
+                cs_list = self.conn.get(GET_TID_QUERY, (file, current_changeset))
                 current_changeset = mozobj['children']
                 if current_changeset:
                     current_changeset = current_changeset[0][:12]
                 current_date = mozobj['date'][0]
             else:
-                cs_list = self.conn.get(GRAB_TID_QUERY, (file, current_changeset))
+                cs_list = self.conn.get(GET_TID_QUERY, (file, current_changeset))
                 current_changeset = change_set[0][4]
                 current_date = change_set[0][3]
             if current_date > date:
