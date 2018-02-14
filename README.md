@@ -6,4 +6,4 @@ TUID is an acronym for "temporally unique identifiers". These are numbers that e
 
 This is an attempt to provide a high speed cache for TUIDs. It is intended for use by CodeCoverage; mapping codecoverage by `tuid` rather than `(revsion, file, line)` triples.
 
-More details can be gleaned from the [motivational document](https://github.com/mozilla/TUID/tree/dev/docs)
+More details can be gleaned from the [motivational document](https://github.com/mozilla/TUID/blob/dev/docs/CodeCoverage%20TUID.md).
