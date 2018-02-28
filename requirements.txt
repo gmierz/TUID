@@ -1,3 +1,5 @@
 requests
 pytest
 mo-logs
+pyLibrary
+mo-json-config
