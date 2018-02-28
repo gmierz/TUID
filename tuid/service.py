@@ -11,6 +11,7 @@ from __future__ import unicode_literals
 import re
 import sqlite3
 
+from mo_dots import Null
 from mo_kwargs import override
 from mo_logs import Log
 
@@ -29,7 +30,7 @@ class TUIDService:
         try:
             self.config = kwargs
             self.conn = conn if conn else sql.Sql(self.config.database.name)
-            self.hg_cache = HgMozillaOrg(hg_cache)
+            self.hg_cache = HgMozillaOrg(hg_cache) if hg_cache else Null
 
             if not self.conn.get_one("SELECT name FROM sqlite_master WHERE type='table';"):
                 self.init_db()
