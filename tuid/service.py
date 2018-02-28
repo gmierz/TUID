@@ -8,13 +8,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import json
 import re
 import sqlite3
 
 from mo_kwargs import override
 from mo_logs import Log
 
+from mo_hg.hg_mozilla_org import HgMozillaOrg
 from tuid import sql
 from tuid.web import Web
 
@@ -25,10 +25,11 @@ GET_CHANGESET_QUERY = "select * from changeset where file=? and substr(cid,0,13)
 class TUIDService:
 
     @override
-    def __init__(self, database, hg, conn=None, kwargs=None):  # pass in conn for testing purposes
+    def __init__(self, database, hg, hg_cache, conn=None, kwargs=None):  # pass in conn for testing purposes
         try:
             self.config = kwargs
             self.conn = conn if conn else sql.Sql(self.config.database.name)
+            self.hg_cache = HgMozillaOrg(hg_cache)
 
             if not self.conn.get_one("SELECT name FROM sqlite_master WHERE type='table';"):
                 self.init_db()
@@ -173,7 +174,7 @@ class TUIDService:
         Log.note(url)
         mozobj = Web.get(url)
         if mozobj is None:
-           return []  # TODO: ensure we cache this in database
+            return []  # TODO: ensure we cache this in database
         date = mozobj['date'][0]
         child = mozobj['children']
         if child:

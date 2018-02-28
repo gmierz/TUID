@@ -30,7 +30,7 @@ def new_db(request):
 
 @pytest.fixture(scope="session")
 def config():
-    config = json2value(File("config.json").read(), flexible=True)
+    config = json2value(File("config.json").read(), flexible=True, leaves=True)
     constants.set(config.constants)
     Log.start(config.debug)
     return config

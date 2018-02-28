@@ -36,6 +36,11 @@ def test_new_then_old(service):
         assert old[i] == new[i]
 
 
+def test_big_diff(service):
+    pass
+    ## https://firefox-code-coverage.herokuapp.com/#/changeset/4e655361be5a
+
+
 def test_tuids_on_changed_file(service):
     # https://hg.mozilla.org/integration/mozilla-inbound/file/a6fdd6eae583/taskcluster/ci/test/tests.yml
     old_lines = service.get_tuids(  # 2205 lines

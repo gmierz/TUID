@@ -14,24 +14,24 @@ import re
 from collections import Mapping
 from copy import copy
 
-from mo_future import text_type, binary_type
-
 import mo_threads
 from mo_dots import set_default, Null, coalesce, unwraplist, listwrap, wrap, Data
-from mo_hg.parse import diff_to_json
-from mo_hg.repos.changesets import Changeset
-from mo_hg.repos.pushs import Push
-from mo_hg.repos.revisions import Revision, revision_schema
+from mo_future import text_type, binary_type
 from mo_json import json2value
 from mo_kwargs import override
 from mo_logs import Log, strings, machine_metadata
-from mo_logs.exceptions import Explanation, assert_no_exception, Except, suppress_exception, WarnOnException
+from mo_logs.exceptions import Explanation, assert_no_exception, Except, suppress_exception
 from mo_logs.strings import expand_template
 from mo_math.randoms import Random
 from mo_threads import Thread, Lock, Queue, THREAD_STOP
 from mo_threads import Till
 from mo_times.dates import Date
 from mo_times.durations import SECOND, Duration, HOUR, MINUTE, DAY
+
+from mo_hg.parse import diff_to_json
+from mo_hg.repos.changesets import Changeset
+from mo_hg.repos.pushs import Push
+from mo_hg.repos.revisions import Revision, revision_schema
 from pyLibrary.env import http, elasticsearch
 from pyLibrary.meta import cache
 
