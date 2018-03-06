@@ -2,6 +2,12 @@
 
 TUID is an acronym for "temporally unique identifiers". These are numbers that effectively track "blame" throughout the source code.
 
+|Branch      |Status   |
+|------------|---------|
+|master      | [![Build Status](https://travis-ci.org/mozilla/TUID.svg?branch=master)](https://travis-ci.org/mozilla/TUID) |
+|dev         | [![Build Status](https://travis-ci.org/mozilla/TUID.svg?branch=dev)](https://travis-ci.org/mozilla/TUID)    |
+
+
 ## Overview
 
 This is an attempt to provide a high speed cache for TUIDs. It is intended for use by CodeCoverage; mapping codecoverage by `tuid` rather than `(revsion, file, line)` triples.
@@ -10,7 +16,6 @@ More details can be gleaned from the [motivational document](https://github.com/
 
 
 ## Running tests
-
 
 After cloning the repo into `~/TUID`:
 
