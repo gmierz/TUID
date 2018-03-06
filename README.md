@@ -9,11 +9,12 @@ This is an attempt to provide a high speed cache for TUIDs. It is intended for u
 More details can be gleaned from the [motivational document](https://github.com/mozilla/TUID/blob/dev/docs/CodeCoverage%20TUID.md).
 
 
-## Installation
+## Running tests
 
 
-After cloning the repo 
+After cloning the repo into `~/TUID`:
 
-    pip install -r requirements.txt
+    cd ~/TUID
+    pip install -r ./tests/requirements.txt
     export PYTHONPATH=.:vendor
     python -m py.test ./tests
