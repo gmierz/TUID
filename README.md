@@ -22,4 +22,4 @@ After cloning the repo into `~/TUID`:
     cd ~/TUID
     pip install -r ./tests/requirements.txt
     export PYTHONPATH=.:vendor
-    python -m py.test ./tests
+    python -m pytest ./tests
