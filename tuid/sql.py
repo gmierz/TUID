@@ -7,29 +7,36 @@
 
 import sqlite3
 
+from mo_threads import Lock
+
+
 class Sql:
     def __init__(self,dbname):
         self.db = sqlite3.connect(dbname)
+        self.locker = Lock("db lock")
 
     def execute(self,sql,params=None):
-        if params:
-            self.db.execute(sql,params)
-        else:
-            self.db.execute(sql)
+        with self.locker:
+            if params:
+                self.db.execute(sql, params)
+            else:
+                self.db.execute(sql)
 
     def commit(self):
-        self.db.commit()
+        with self.locker:
+            self.db.commit()
 
     def get(self,sql,params=None):
-        if params:
-            return self.db.execute(sql,params).fetchall()
-        else:
-            return self.db.execute(sql).fetchall()
-
+        with self.locker:
+            if params:
+                return self.db.execute(sql,params).fetchall()
+            else:
+                return self.db.execute(sql).fetchall()
 
     def get_one(self,sql,params=None):
-        if params:
-            return self.db.execute(sql,params).fetchone()
-        else:
-            return self.db.execute(sql).fetchone()
+        with self.locker:
+            if params:
+                return self.db.execute(sql,params).fetchone()
+            else:
+                return self.db.execute(sql).fetchone()
 
